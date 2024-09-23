@@ -13,7 +13,8 @@ pacman::p_load("dplyr",
               "magrittr",
               "ggplot2",
               "readr",
-              "purrr")
+              "purrr",
+              "tidyr")
 
 data_cases <- readr::read_csv("data/mockdata_cases1.csv")
 
@@ -167,4 +168,36 @@ evolution_plot
 # Observation: Prevalence widely variable throughout they year across the locations
 #              on average, wonderland affected by high prevalence while oz has the
 #              lowest prevalence
-   
+
+
+# Need to check (not just prevalence) but count of cases and total vulnerable
+
+data_use_ordered_long <- tidyr::pivot_longer(data=data_use_ordered,
+                                             cols=c("positive","total"),
+                                             names_to="Outcome",
+                                             values_to="counts")
+
+
+
+mordor_stacked_bar_graph <- ggplot2::ggplot(data=data_use_ordered_long%>%
+                                                       dplyr::filter(location=="mordor"),
+                                                 mapping=aes(x=month,
+                                                             y=counts,
+                                                             fill=Outcome))+
+                                       ggplot2::scale_x_discrete(limits=factor(1:12),
+                                                                 labels=c("J","F","M",
+                                                                          "A","M","J",
+                                                                          "J","A","S",
+                                                                          "O","N","D"))+
+                                           ggplot2::geom_bar(position="stack", stat="identity")+
+                                             ggplot2::facet_wrap(~year)+ 
+                                               ggplot2::theme_bw()+
+                                                 ggplot2::xlab("Month of the Year")+
+                                                    ggplot2::ylab("Count")
+
+mordor_stacked_bar_graph
+                                                  
+  
+               
+
+
